@@ -4,10 +4,10 @@ import os
 
 app = Flask(__name__)
 
-# File where we save the data
+
 DATA_FILE = 'data.json'
 
-# Load data from file on startup
+
 def load_data():
     """Load family members and tasks from the JSON file"""
     if os.path.exists(DATA_FILE):
@@ -15,37 +15,37 @@ def load_data():
             return json.load(f)
     return []
 
-# Save data to file
+
 def save_data(data):
     """Save family members and tasks to the JSON file"""
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=2)
 
-# Load data when app starts
+
 FamilyNames = load_data()
 
-# FUNCTION 1: Add family member
+
 def AddFamilyMember(name):
     """Add a family member to the list"""
     global FamilyNames
     if name not in [m['name'] for m in FamilyNames]:
         FamilyNames.append({'name': name, 'tasks': []})
-        save_data(FamilyNames)  # Save to file
+        save_data(FamilyNames)  
         return True
     return False
 
-# FUNCTION 2: Add task for a family member
+
 def AddTaskForFamilyMember(member_name, task_text, urgency='none'):
     """Add a task to a family member"""
     global FamilyNames
     for member in FamilyNames:
         if member['name'].lower() == member_name.lower():
             member['tasks'].append({'text': task_text, 'urgency': urgency})
-            save_data(FamilyNames)  # Save to file
+            save_data(FamilyNames)  
             return True
     return False
 
-# FLASK ENDPOINTS
+# FLASK thingys
 
 @app.route('/')
 def home():
@@ -95,7 +95,7 @@ def delete_task():
             if member['name'].lower() == member_name.lower():
                 if 0 <= task_index < len(member['tasks']):
                     member['tasks'].pop(task_index)
-                    save_data(FamilyNames)  # Save to file
+                    save_data(FamilyNames)  
                     return jsonify({'success': True, 'message': 'Task deleted!'})
                 else:
                     return jsonify({'success': False, 'message': 'Task not found'}), 404
@@ -105,4 +105,4 @@ def delete_task():
         return jsonify({'success': False, 'message': str(e)}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
